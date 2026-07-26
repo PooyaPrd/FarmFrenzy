@@ -8,6 +8,8 @@ module com.farmfrenzy {
 
     exports com.farmfrenzy;
     exports com.farmfrenzy.controller;
+    exports com.farmfrenzy.engine;
+    exports com.farmfrenzy.exception;
     exports com.farmfrenzy.model;
     exports com.farmfrenzy.model.base;
     exports com.farmfrenzy.model.enums;
