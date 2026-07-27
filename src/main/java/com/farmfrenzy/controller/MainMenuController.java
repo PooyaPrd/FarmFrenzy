@@ -7,13 +7,20 @@ import javafx.scene.control.Button;
 public class MainMenuController {
 
     @FXML
-    private Button playButton;
+    private Button startButton;
+
+    @FXML
+    private Button levelButton;
 
     @FXML
     private Button exitButton;
 
     @FXML
-    private void onPlay(ActionEvent event) {
+    private void onStartGame(ActionEvent event) {
+    }
+
+    @FXML
+    private void onLevelSelection(ActionEvent event) {
     }
 
     @FXML

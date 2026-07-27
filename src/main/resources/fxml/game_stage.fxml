@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            styleClass="game-root" stylesheets="@../css/style.css">
+
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="30" styleClass="top-bar">
+            <Label fx:id="coinsLabel" text="Coins: 0" styleClass="info-label"/>
+            <Label fx:id="timeLabel" text="Time: 0" styleClass="info-label"/>
+            <Label fx:id="objectiveLabel" text="Objective: collect 100 coins" styleClass="info-label"/>
+            <Button fx:id="pauseButton" text="Pause" styleClass="control-button"/>
+        </HBox>
+    </top>
+
+    <center>
+        <GridPane fx:id="farmGrid" alignment="CENTER" gridLinesVisible="true" styleClass="game-grid">
+            <columnConstraints>
+                <ColumnConstraints minWidth="90" prefWidth="90"/>
+                <ColumnConstraints minWidth="90" prefWidth="90"/>
+                <ColumnConstraints minWidth="90" prefWidth="90"/>
+                <ColumnConstraints minWidth="90" prefWidth="90"/>
+                <ColumnConstraints minWidth="90" prefWidth="90"/>
+                <ColumnConstraints minWidth="90" prefWidth="90"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="80" prefHeight="80"/>
+                <RowConstraints minHeight="80" prefHeight="80"/>
+                <RowConstraints minHeight="80" prefHeight="80"/>
+                <RowConstraints minHeight="80" prefHeight="80"/>
+                <RowConstraints minHeight="80" prefHeight="80"/>
+            </rowConstraints>
+        </GridPane>
+    </center>
+
+    <right>
+        <VBox alignment="TOP_CENTER" spacing="15" styleClass="control-panel">
+            <Label text="Shop" styleClass="info-label"/>
+            <Button fx:id="buyChickenButton" text="Buy Chicken (50)" styleClass="control-button"/>
+            <Button fx:id="wellButton" text="Water Well" styleClass="control-button"/>
+            <Button fx:id="warehouseButton" text="Warehouse" styleClass="control-button"/>
+            <Button fx:id="machineButton" text="Egg Powder Machine" styleClass="control-button"/>
+        </VBox>
+    </right>
+
+    <bottom>
+        <HBox alignment="CENTER" spacing="25" styleClass="control-panel">
+            <Label fx:id="waterLabel" text="Water: 5 / 5" styleClass="info-label"/>
+            <Label fx:id="warehouseLabel" text="Warehouse: 0 / 50" styleClass="info-label"/>
+            <Label fx:id="messageLabel" text="" styleClass="info-label"/>
+        </HBox>
+    </bottom>
+
+</BorderPane>

@@ -10,7 +10,7 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("/fxml/MainMenu.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/fxml/main_menu.fxml"));
         Scene scene = new Scene(root, 1000, 700);
         scene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
         stage.setTitle("Farm Frenzy 2");

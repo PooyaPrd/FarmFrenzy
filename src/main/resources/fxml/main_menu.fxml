@@ -6,8 +6,10 @@
 
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.farmfrenzy.controller.MainMenuController"
-      alignment="CENTER" spacing="20" styleClass="menu-root">
+      alignment="CENTER" spacing="20" styleClass="menu-root"
+      stylesheets="@../css/style.css">
     <Label text="Farm Frenzy 2" styleClass="title-label"/>
-    <Button fx:id="playButton" text="Play" onAction="#onPlay" styleClass="menu-button"/>
+    <Button fx:id="startButton" text="Start Game" onAction="#onStartGame" styleClass="menu-button"/>
+    <Button fx:id="levelButton" text="Level Selection" onAction="#onLevelSelection" styleClass="menu-button"/>
     <Button fx:id="exitButton" text="Exit" onAction="#onExit" styleClass="menu-button"/>
 </VBox>
