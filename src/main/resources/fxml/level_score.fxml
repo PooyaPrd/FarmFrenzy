@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.farmfrenzy.controller.LevelScoreController"
       alignment="CENTER" spacing="18" styleClass="dialog-box"
       stylesheets="@../css/style.css">
     <Label text="Level Finished" styleClass="header-label"/>
     <Label fx:id="starsLabel" text="Stars: 0" styleClass="score-label"/>
+    <HBox fx:id="starsBox" alignment="CENTER" spacing="12"/>
     <Label fx:id="coinsLabel" text="Coins Earned: 0" styleClass="score-label"/>
     <Label fx:id="timeLabel" text="Time Taken: 0" styleClass="score-label"/>
     <Label text="Well played, Pouya!" styleClass="info-label"/>
-    <Button fx:id="okButton" text="OK" styleClass="menu-button"/>
+    <Button fx:id="okButton" text="OK" onAction="#onOk" styleClass="menu-button"/>
 </VBox>

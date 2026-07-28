@@ -7,13 +7,14 @@
 <?import javafx.scene.control.ListView?>
 
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.farmfrenzy.controller.WarehouseDialogController"
       alignment="CENTER" spacing="15" styleClass="dialog-box"
       stylesheets="@../css/style.css">
     <Label text="Warehouse" styleClass="header-label"/>
     <Label fx:id="capacityLabel" text="Space: 0 / 50" styleClass="info-label"/>
     <ListView fx:id="productListView" prefWidth="320" styleClass="warehouse-list"/>
     <HBox alignment="CENTER" spacing="15">
-        <Button fx:id="sellButton" text="Sell" styleClass="control-button"/>
-        <Button fx:id="closeButton" text="Close" styleClass="control-button"/>
+        <Button fx:id="sellButton" text="Sell" onAction="#onSell" styleClass="control-button"/>
+        <Button fx:id="closeButton" text="Close" onAction="#onClose" styleClass="control-button"/>
     </HBox>
 </VBox>

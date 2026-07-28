@@ -6,13 +6,14 @@
 <?import javafx.scene.control.Label?>
 
 <VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.farmfrenzy.controller.LevelSelectionController"
       alignment="CENTER" spacing="25" styleClass="game-root"
       stylesheets="@../css/style.css">
     <Label text="Select Level" styleClass="header-label"/>
     <FlowPane alignment="CENTER" hgap="20" vgap="20" prefWrapLength="500">
-        <Button fx:id="level1Button" text="Level 1" styleClass="level-button"/>
-        <Button fx:id="level2Button" text="Level 2" styleClass="level-button"/>
-        <Button fx:id="level3Button" text="Level 3" styleClass="level-button"/>
+        <Button fx:id="level1Button" text="Level 1" onAction="#onLevelOne" styleClass="level-button"/>
+        <Button fx:id="level2Button" text="Level 2" onAction="#onLevelTwo" styleClass="level-button"/>
+        <Button fx:id="level3Button" text="Level 3" onAction="#onLevelThree" styleClass="level-button"/>
     </FlowPane>
-    <Button fx:id="backButton" text="Back" styleClass="menu-button"/>
+    <Button fx:id="backButton" text="Back" onAction="#onBack" styleClass="menu-button"/>
 </VBox>
