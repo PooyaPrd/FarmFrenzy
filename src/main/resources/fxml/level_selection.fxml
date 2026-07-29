@@ -1,19 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 
-<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.farmfrenzy.controller.LevelSelectionController"
-      alignment="CENTER" spacing="25" styleClass="game-root"
-      stylesheets="@../css/style.css">
-    <Label text="Select Level" styleClass="header-label"/>
-    <FlowPane alignment="CENTER" hgap="20" vgap="20" prefWrapLength="500">
-        <Button fx:id="level1Button" text="Level 1" onAction="#onLevelOne" styleClass="level-button"/>
-        <Button fx:id="level2Button" text="Level 2" onAction="#onLevelTwo" styleClass="level-button"/>
-        <Button fx:id="level3Button" text="Level 3" onAction="#onLevelThree" styleClass="level-button"/>
-    </FlowPane>
-    <Button fx:id="backButton" text="Back" onAction="#onBack" styleClass="menu-button"/>
-</VBox>
+<AnchorPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.farmfrenzy.controller.LevelSelectionController"
+            styleClass="menu-root" stylesheets="@../css/style.css"
+            prefWidth="800" prefHeight="600">
+
+    <VBox alignment="CENTER" spacing="16" prefWidth="270"
+          AnchorPane.leftAnchor="268" AnchorPane.topAnchor="305">
+        <Label text="Select Level" styleClass="panel-title"/>
+        <FlowPane alignment="CENTER" hgap="12" vgap="12" prefWrapLength="260">
+            <Button fx:id="level1Button" text="Level 1" onAction="#onLevelOne" styleClass="level-button"/>
+            <Button fx:id="level2Button" text="Level 2" onAction="#onLevelTwo" styleClass="level-button"/>
+            <Button fx:id="level3Button" text="Level 3" onAction="#onLevelThree" styleClass="level-button"/>
+        </FlowPane>
+        <Button fx:id="backButton" text="Back" onAction="#onBack" styleClass="panel-button"/>
+    </VBox>
+
+</AnchorPane>

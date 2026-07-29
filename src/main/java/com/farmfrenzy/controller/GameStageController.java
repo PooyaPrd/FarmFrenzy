@@ -1,5 +1,6 @@
 package com.farmfrenzy.controller;
 
+import com.farmfrenzy.MainApp;
 import com.farmfrenzy.engine.GameEngine;
 import com.farmfrenzy.exception.InsufficientCoinsException;
 import com.farmfrenzy.exception.OutofWaterException;
@@ -290,6 +291,7 @@ public class GameStageController {
             dialog.setTitle("Warehouse");
             dialog.initModality(Modality.APPLICATION_MODAL);
             dialog.setScene(new Scene(root));
+            MainApp.setAppIcon(dialog);
             dialog.showAndWait();
             updateLabels();
         } catch (IOException e) {
@@ -306,7 +308,7 @@ public class GameStageController {
     @FXML
     private void onPauseClicked(ActionEvent event) {
         stopEverything();
-        SceneSwitcher.switchTo(pauseButton, "main_menu.fxml");
+        SceneSwitcher.switchTo(pauseButton, "login.fxml");
     }
 
     private void checkLevelEnd() {

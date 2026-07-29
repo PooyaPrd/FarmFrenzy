@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Button?>
@@ -7,17 +8,29 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.PasswordField?>
 
-<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.farmfrenzy.controller.LoginController"
-      alignment="CENTER" spacing="18" styleClass="menu-root"
-      stylesheets="@../css/style.css">
-    <Label text="Farm Frenzy 2" styleClass="title-label"/>
-    <Label text="Please login to continue" styleClass="info-label"/>
-    <TextField fx:id="usernameField" promptText="Username" maxWidth="240"/>
-    <PasswordField fx:id="passwordField" promptText="Password" maxWidth="240"/>
-    <HBox alignment="CENTER" spacing="15">
-        <Button fx:id="loginButton" text="Login" onAction="#onLogin" styleClass="control-button"/>
-        <Button fx:id="registerButton" text="Register" onAction="#onRegister" styleClass="control-button"/>
-    </HBox>
-    <Label fx:id="messageLabel" text="" styleClass="info-label"/>
-</VBox>
+<AnchorPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.farmfrenzy.controller.LoginController"
+            styleClass="menu-root" stylesheets="@../css/style.css"
+            prefWidth="800" prefHeight="600">
+
+    <VBox fx:id="loginBox" alignment="CENTER" spacing="14" prefWidth="270"
+          AnchorPane.leftAnchor="268" AnchorPane.topAnchor="305">
+        <Label text="Welcome to the farm" styleClass="panel-title"/>
+        <TextField fx:id="usernameField" promptText="Username" maxWidth="210"/>
+        <PasswordField fx:id="passwordField" promptText="Password" maxWidth="210"/>
+        <HBox alignment="CENTER" spacing="12">
+            <Button fx:id="loginButton" text="Login" onAction="#onLogin" styleClass="panel-button"/>
+            <Button fx:id="registerButton" text="Register" onAction="#onRegister" styleClass="panel-button"/>
+        </HBox>
+        <Label fx:id="messageLabel" text="" styleClass="panel-label" wrapText="true"/>
+    </VBox>
+
+    <VBox fx:id="menuBox" alignment="CENTER" spacing="16" prefWidth="270" visible="false" managed="false"
+          AnchorPane.leftAnchor="268" AnchorPane.topAnchor="320">
+        <Label fx:id="welcomeLabel" text="" styleClass="panel-title"/>
+        <Button fx:id="startButton" text="Start Game" onAction="#onStartGame" styleClass="panel-button-wide"/>
+        <Button fx:id="logoutButton" text="Log Out" onAction="#onLogout" styleClass="panel-button-wide"/>
+        <Button fx:id="exitButton" text="Exit" onAction="#onExit" styleClass="panel-button-wide"/>
+    </VBox>
+
+</AnchorPane>

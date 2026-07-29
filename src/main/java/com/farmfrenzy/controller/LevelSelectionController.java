@@ -64,7 +64,7 @@ public class LevelSelectionController {
 
     @FXML
     private void onBack(ActionEvent event) {
-        SceneSwitcher.switchTo(backButton, "main_menu.fxml");
+        SceneSwitcher.switchTo(backButton, "login.fxml");
     }
 
     private void startLevel(int level, Button source) {
