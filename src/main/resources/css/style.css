@@ -101,6 +101,11 @@
     -fx-background-color: transparent;
 }
 
+.plant-cell {
+    -fx-border-color: rgba(255, 214, 0, 0.7);
+    -fx-border-width: 2;
+}
+
 .dialog-box {
     -fx-background-color: #fff8e1;
     -fx-border-color: #8d6e63;

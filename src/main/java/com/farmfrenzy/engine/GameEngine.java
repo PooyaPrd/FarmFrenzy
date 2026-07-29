@@ -27,6 +27,10 @@ import java.util.concurrent.TimeUnit;
 public class GameEngine {
 
     public static final int CHICKEN_COST = 50;
+    public static final int FIRST_PLANT_COLUMN = 2;
+    public static final int LAST_PLANT_COLUMN = 3;
+    public static final int FIRST_PLANT_ROW = 1;
+    public static final int LAST_PLANT_ROW = 3;
 
     private ExecutorService executor;
     private int coins;
@@ -49,7 +53,7 @@ public class GameEngine {
         this.grassList = Collections.synchronizedList(new ArrayList<>());
         this.warehouse = new Warehouse();
         this.waterWell = new WaterWell();
-        this.eggPowderMachine = new EggPowderMachine("machine1", 2, 2);
+        this.eggPowderMachine = new EggPowderMachine("machine1", 1, 2);
         this.isRunning = false;
         this.random = new Random();
     }
@@ -141,6 +145,11 @@ public class GameEngine {
         refreshUi();
     }
 
+    public static boolean isPlantCell(int x, int y) {
+        return x >= FIRST_PLANT_COLUMN && x <= LAST_PLANT_COLUMN
+                && y >= FIRST_PLANT_ROW && y <= LAST_PLANT_ROW;
+    }
+
     private int[] randomBorderCell() {
         int x = random.nextInt(Chicken.COLS);
         int y = random.nextInt(Chicken.ROWS);
@@ -163,6 +172,9 @@ public class GameEngine {
     }
 
     public synchronized boolean plantGrass(int x, int y) throws OutofWaterException {
+        if (!isPlantCell(x, y)) {
+            return false;
+        }
         if (findGrassAt(x, y) != null) {
             return false;
         }

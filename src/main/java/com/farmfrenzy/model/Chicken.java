@@ -21,6 +21,8 @@ public class Chicken extends DomesticAnimal {
     private Egg lastEgg;
     private boolean hasEaten;
     private int eggCooldown;
+    private int homeX;
+    private int homeY;
     private Random random;
 
     public Chicken(int x, int y) {
@@ -28,7 +30,17 @@ public class Chicken extends DomesticAnimal {
         counter++;
         this.hasEaten = false;
         this.eggCooldown = 0;
+        this.homeX = x;
+        this.homeY = y;
         this.random = new Random();
+    }
+
+    public int getHomeX() {
+        return homeX;
+    }
+
+    public int getHomeY() {
+        return homeY;
     }
 
     public Grass getTarget() {
@@ -78,10 +90,16 @@ public class Chicken extends DomesticAnimal {
         if (state == AnimalState.HUNGRY) {
             if (target != null) {
                 stepTowards(target.getX(), target.getY());
+            } else {
+                stepToFreeCell();
             }
             return;
         }
-        stepOnBorder();
+        if (!isBorderCell(x, y)) {
+            stepTowards(homeX, homeY);
+        } else {
+            stepOnBorder();
+        }
         changeState(AnimalState.WALKING);
     }
 
@@ -98,6 +116,22 @@ public class Chicken extends DomesticAnimal {
     }
 
     private void stepOnBorder() {
+        int[] cell = randomNeighbour();
+        if (isBorderCell(cell[0], cell[1])) {
+            x = cell[0];
+            y = cell[1];
+        }
+    }
+
+    private void stepToFreeCell() {
+        int[] cell = randomNeighbour();
+        if (isInsideGrid(cell[0], cell[1])) {
+            x = cell[0];
+            y = cell[1];
+        }
+    }
+
+    private int[] randomNeighbour() {
         int direction = random.nextInt(4);
         int newX = x;
         int newY = y;
@@ -110,14 +144,15 @@ public class Chicken extends DomesticAnimal {
         } else {
             newX++;
         }
-        if (isBorderCell(newX, newY)) {
-            x = newX;
-            y = newY;
-        }
+        return new int[]{newX, newY};
+    }
+
+    public static boolean isInsideGrid(int x, int y) {
+        return x >= 0 && x < COLS && y >= 0 && y < ROWS;
     }
 
     public static boolean isBorderCell(int x, int y) {
-        if (x < 0 || x >= COLS || y < 0 || y >= ROWS) {
+        if (!isInsideGrid(x, y)) {
             return false;
         }
         return x == 0 || x == COLS - 1 || y == 0 || y == ROWS - 1;

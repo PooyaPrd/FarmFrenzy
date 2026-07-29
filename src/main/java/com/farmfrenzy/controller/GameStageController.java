@@ -139,6 +139,9 @@ public class GameStageController {
             for (int col = 0; col < COLS; col++) {
                 StackPane cell = new StackPane();
                 cell.getStyleClass().add("grid-cell");
+                if (GameEngine.isPlantCell(col, row)) {
+                    cell.getStyleClass().add("plant-cell");
+                }
                 cell.setPrefSize(96, 78);
                 final int cellX = col;
                 final int cellY = row;
