@@ -8,10 +8,10 @@ import com.farmfrenzy.model.EggPowderMachine;
 import com.farmfrenzy.model.Grass;
 import com.farmfrenzy.model.base.Animal;
 import com.farmfrenzy.model.base.Product;
+import com.farmfrenzy.model.PlayerProgress;
 import com.farmfrenzy.model.User;
 import com.farmfrenzy.model.enums.AnimalState;
 import com.farmfrenzy.repository.PlayerProgressRepository;
-import com.farmfrenzy.repository.UserRepository;
 import com.farmfrenzy.util.SceneSwitcher;
 
 import javafx.animation.Animation;
@@ -45,7 +45,6 @@ public class GameStageController {
 
     private static final int ROWS = 5;
     private static final int COLS = 6;
-    private static final String PLAYER_NAME = "pouya";
 
     @FXML
     private GridPane farmGrid;
@@ -312,16 +311,17 @@ public class GameStageController {
     }
 
     private void saveProgress(int earnedCoins) {
-        UserRepository userRepository = new UserRepository();
-        User player = userRepository.getUser(PLAYER_NAME);
+        User player = LoginController.currentUser;
         if (player == null) {
-            userRepository.saveUser(PLAYER_NAME, "1234");
-            player = userRepository.getUser(PLAYER_NAME);
+            return;
         }
-        if (player != null) {
-            PlayerProgressRepository progressRepository = new PlayerProgressRepository();
-            progressRepository.saveProgress(player.getId(), selectedLevel, earnedCoins);
+        PlayerProgressRepository progressRepository = new PlayerProgressRepository();
+        PlayerProgress saved = progressRepository.getProgressByUserId(player.getId());
+        int bestLevel = selectedLevel;
+        if (saved != null && saved.getLevel() > bestLevel) {
+            bestLevel = saved.getLevel();
         }
+        progressRepository.saveProgress(player.getId(), bestLevel, earnedCoins);
     }
 
     private int calculateStars(int seconds) {

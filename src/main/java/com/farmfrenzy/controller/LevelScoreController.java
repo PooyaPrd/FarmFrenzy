@@ -28,6 +28,9 @@ public class LevelScoreController {
     private Label timeLabel;
 
     @FXML
+    private Label playerLabel;
+
+    @FXML
     private HBox starsBox;
 
     @FXML
@@ -38,6 +41,9 @@ public class LevelScoreController {
         starsLabel.setText("Stars: " + stars);
         coinsLabel.setText("Coins Earned: " + coinsEarned);
         timeLabel.setText("Time Taken: " + timeTaken + " seconds");
+        if (LoginController.currentUser != null) {
+            playerLabel.setText("Well played, " + LoginController.currentUser.getUsername() + "!");
+        }
         showStars();
     }
 

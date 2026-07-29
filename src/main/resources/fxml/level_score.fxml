@@ -14,6 +14,6 @@
     <HBox fx:id="starsBox" alignment="CENTER" spacing="12"/>
     <Label fx:id="coinsLabel" text="Coins Earned: 0" styleClass="score-label"/>
     <Label fx:id="timeLabel" text="Time Taken: 0" styleClass="score-label"/>
-    <Label text="Well played, Pouya!" styleClass="info-label"/>
+    <Label fx:id="playerLabel" text="Well played!" styleClass="info-label"/>
     <Button fx:id="okButton" text="OK" onAction="#onOk" styleClass="menu-button"/>
 </VBox>

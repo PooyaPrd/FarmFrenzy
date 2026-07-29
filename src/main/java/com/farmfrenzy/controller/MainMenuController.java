@@ -5,6 +5,7 @@ import com.farmfrenzy.util.SceneSwitcher;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 
 public class MainMenuController {
 
@@ -16,6 +17,16 @@ public class MainMenuController {
 
     @FXML
     private Button exitButton;
+
+    @FXML
+    private Label welcomeLabel;
+
+    @FXML
+    public void initialize() {
+        if (LoginController.currentUser != null) {
+            welcomeLabel.setText("Welcome " + LoginController.currentUser.getUsername());
+        }
+    }
 
     @FXML
     private void onStartGame(ActionEvent event) {
