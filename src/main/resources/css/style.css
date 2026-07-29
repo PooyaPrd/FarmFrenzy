@@ -4,6 +4,10 @@
 
 .game-root {
     -fx-background-color: #dcedc8;
+    -fx-background-image: url("../images/farm_background.png");
+    -fx-background-size: 100% 100%;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
 }
 
 .title-label {
@@ -79,31 +83,64 @@
     -fx-padding: 10;
 }
 
-.control-panel {
-    -fx-background-color: #c5e1a5;
-    -fx-padding: 10;
-}
-
 .game-grid {
-    -fx-border-color: #33691e;
-    -fx-border-width: 3;
-    -fx-background-color: #f1f8e9;
-    -fx-background-image: url("../images/farm_field.png");
-    -fx-background-size: 100% 100%;
-    -fx-background-repeat: no-repeat;
-    -fx-background-position: center;
+    -fx-background-color: transparent;
     -fx-padding: 0;
 }
 
 .grid-cell {
-    -fx-border-color: rgba(255, 255, 255, 0.3);
+    -fx-border-color: rgba(255, 255, 255, 0.12);
     -fx-border-width: 1;
     -fx-background-color: transparent;
 }
 
 .plant-cell {
-    -fx-border-color: rgba(255, 214, 0, 0.7);
+    -fx-border-color: rgba(255, 214, 0, 0.55);
     -fx-border-width: 2;
+    -fx-background-color: rgba(124, 179, 66, 0.18);
+}
+
+.plant-cell:hover {
+    -fx-background-color: rgba(124, 179, 66, 0.35);
+}
+
+.hud-panel {
+    -fx-background-color: rgba(51, 105, 30, 0.72);
+    -fx-padding: 6 12 6 12;
+}
+
+.hud-strip {
+    -fx-padding: 4 12 4 12;
+}
+
+.hud-label {
+    -fx-font-family: "Arial";
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.8), 4, 0.5, 0, 1);
+}
+
+.hud-button {
+    -fx-font-size: 13px;
+    -fx-padding: 4 10 4 10;
+    -fx-background-color: #ffb300;
+    -fx-background-radius: 6;
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.hud-button:hover {
+    -fx-background-color: #ffa000;
+}
+
+.map-building {
+    -fx-cursor: hand;
+}
+
+.map-building:hover {
+    -fx-effect: dropshadow(gaussian, rgba(255, 248, 170, 0.95), 20, 0.5, 0, 0);
 }
 
 .dialog-box {

@@ -4,7 +4,6 @@ import com.farmfrenzy.engine.GameEngine;
 import com.farmfrenzy.exception.InsufficientCoinsException;
 import com.farmfrenzy.exception.OutofWaterException;
 import com.farmfrenzy.exception.WarehouseFullException;
-import com.farmfrenzy.model.EggPowderMachine;
 import com.farmfrenzy.model.Grass;
 import com.farmfrenzy.model.base.Animal;
 import com.farmfrenzy.model.base.Product;
@@ -28,6 +27,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Modality;
@@ -45,6 +45,13 @@ public class GameStageController {
 
     private static final int ROWS = 5;
     private static final int COLS = 6;
+    private static final int REQUIRED_CHICKENS = 3;
+    private static final int REQUIRED_POWDERS = 5;
+    private static final int GOLD_TIME = 150;
+    private static final int SILVER_TIME = 210;
+    private static final int CELL_WIDTH = 84;
+    private static final int CELL_HEIGHT = 62;
+    private static final int SPRITE_SIZE = 46;
 
     @FXML
     private GridPane farmGrid;
@@ -71,13 +78,13 @@ public class GameStageController {
     private Button buyChickenButton;
 
     @FXML
-    private Button wellButton;
+    private ImageView wellImage;
 
     @FXML
-    private Button warehouseButton;
+    private ImageView warehouseImage;
 
     @FXML
-    private Button machineButton;
+    private ImageView machineImage;
 
     @FXML
     private Button pauseButton;
@@ -95,10 +102,10 @@ public class GameStageController {
     public void initialize() {
         requiredCoins = requiredCoinsForLevel(selectedLevel);
         levelFinished = false;
-        gameEngine = new GameEngine(60);
+        gameEngine = new GameEngine(selectedLevel);
         activeGame = gameEngine;
-        gameEngine.setUiUpdate(() -> updateLabels());
-        objectiveLabel.setText("Objective: earn " + requiredCoins + " coins");
+        gameEngine.setUiUpdate(() -> onEngineUpdate());
+        objectiveLabel.setText(objectiveText());
         gameEngine.startGame();
         renderGrid();
         updateLabels();
@@ -115,6 +122,18 @@ public class GameStageController {
             return 250;
         }
         return 400;
+    }
+
+    private String objectiveText() {
+        if (selectedLevel == 2) {
+            return "Objective: " + REQUIRED_CHICKENS + " chickens and " + REQUIRED_POWDERS + " egg powders";
+        }
+        return "Objective: earn " + requiredCoins + " coins";
+    }
+
+    private void onEngineUpdate() {
+        updateLabels();
+        checkLevelEnd();
     }
 
     private void refreshScreen() {
@@ -141,7 +160,7 @@ public class GameStageController {
                 if (GameEngine.isPlantCell(col, row)) {
                     cell.getStyleClass().add("plant-cell");
                 }
-                cell.setPrefSize(96, 78);
+                cell.setPrefSize(CELL_WIDTH, CELL_HEIGHT);
                 final int cellX = col;
                 final int cellY = row;
                 cell.setOnMouseClicked(event -> onCellClicked(cellX, cellY));
@@ -151,8 +170,6 @@ public class GameStageController {
         for (Grass grass : gameEngine.getGrassList()) {
             addToCell(grass.getX(), grass.getY(), createNode("/images/grass.png", "Grass"));
         }
-        EggPowderMachine machine = gameEngine.getEggPowderMachine();
-        addToCell(machine.getX(), machine.getY(), createNode(machine.getImagePath(), machine.getName()));
         for (Product product : gameEngine.getDroppedProducts()) {
             addToCell(product.getX(), product.getY(), createNode(product.getImagePath(), product.getName()));
         }
@@ -172,8 +189,8 @@ public class GameStageController {
         Image image = loadImage(imagePath);
         if (image != null) {
             ImageView view = new ImageView(image);
-            view.setFitWidth(50);
-            view.setFitHeight(50);
+            view.setFitWidth(SPRITE_SIZE);
+            view.setFitHeight(SPRITE_SIZE);
             view.setPreserveRatio(true);
             return view;
         }
@@ -191,7 +208,7 @@ public class GameStageController {
             images.put(path, null);
             return null;
         }
-        Image image = new Image(stream, 50, 50, true, true);
+        Image image = new Image(stream, SPRITE_SIZE * 2, SPRITE_SIZE * 2, true, true);
         images.put(path, image);
         return image;
     }
@@ -252,7 +269,7 @@ public class GameStageController {
     }
 
     @FXML
-    private void onWellClicked(ActionEvent event) {
+    private void onWellClicked(MouseEvent event) {
         try {
             gameEngine.refillWell();
             messageLabel.setText("The well is full again");
@@ -263,7 +280,7 @@ public class GameStageController {
     }
 
     @FXML
-    private void onWarehouseClicked(ActionEvent event) {
+    private void onWarehouseClicked(MouseEvent event) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/warehouse_dialog.fxml"));
             Parent root = loader.load();
@@ -281,7 +298,7 @@ public class GameStageController {
     }
 
     @FXML
-    private void onMachineClicked(ActionEvent event) {
+    private void onMachineClicked(MouseEvent event) {
         gameEngine.startEggPowderMachine();
         messageLabel.setText("Egg powder machine started");
     }
@@ -293,7 +310,7 @@ public class GameStageController {
     }
 
     private void checkLevelEnd() {
-        if (levelFinished || gameEngine.getCoins() < requiredCoins) {
+        if (levelFinished || !isObjectiveDone()) {
             return;
         }
         levelFinished = true;
@@ -308,6 +325,14 @@ public class GameStageController {
         LevelScoreController.coinsEarned = earned;
         LevelScoreController.timeTaken = seconds;
         SceneSwitcher.switchTo(farmGrid, "level_score.fxml");
+    }
+
+    private boolean isObjectiveDone() {
+        if (selectedLevel == 2) {
+            return gameEngine.countAliveChickens() >= REQUIRED_CHICKENS
+                    && gameEngine.countEggPowderInWarehouse() >= REQUIRED_POWDERS;
+        }
+        return gameEngine.getCoins() >= requiredCoins;
     }
 
     private void saveProgress(int earnedCoins) {
@@ -325,6 +350,15 @@ public class GameStageController {
     }
 
     private int calculateStars(int seconds) {
+        if (selectedLevel == 2) {
+            if (seconds <= GOLD_TIME) {
+                return 3;
+            }
+            if (seconds <= SILVER_TIME) {
+                return 2;
+            }
+            return 1;
+        }
         if (seconds <= 120) {
             return 3;
         }

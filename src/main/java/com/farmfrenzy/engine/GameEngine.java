@@ -31,8 +31,12 @@ public class GameEngine {
     public static final int LAST_PLANT_COLUMN = 3;
     public static final int FIRST_PLANT_ROW = 1;
     public static final int LAST_PLANT_ROW = 3;
+    public static final int LEVEL_TWO_COINS = 20;
+    public static final int LEVEL_TWO_CHICKENS = 2;
+    public static final int NORMAL_COINS = 60;
 
     private ExecutorService executor;
+    private int level;
     private int coins;
     private int levelTime;
     private List<Animal> animals;
@@ -45,17 +49,39 @@ public class GameEngine {
     private Random random;
     private Runnable uiUpdate;
 
-    public GameEngine(int startCoins) {
-        this.coins = startCoins;
+    public GameEngine(int level) {
+        this.level = level;
         this.levelTime = 0;
         this.animals = Collections.synchronizedList(new ArrayList<>());
         this.droppedProducts = Collections.synchronizedList(new ArrayList<>());
         this.grassList = Collections.synchronizedList(new ArrayList<>());
         this.warehouse = new Warehouse();
         this.waterWell = new WaterWell();
-        this.eggPowderMachine = new EggPowderMachine("machine1", 1, 2);
+        this.eggPowderMachine = new EggPowderMachine("machine1", 0, 2);
         this.isRunning = false;
         this.random = new Random();
+        setupLevel();
+    }
+
+    private void setupLevel() {
+        if (level == 2) {
+            coins = LEVEL_TWO_COINS;
+            addStartingChickens(LEVEL_TWO_CHICKENS);
+        } else {
+            coins = NORMAL_COINS;
+        }
+        waterWell.refill();
+    }
+
+    private void addStartingChickens(int count) {
+        for (int i = 0; i < count; i++) {
+            int[] cell = randomBorderCell();
+            animals.add(new Chicken(cell[0], cell[1]));
+        }
+    }
+
+    public int getLevel() {
+        return level;
     }
 
     public synchronized int getCoins() {
@@ -143,6 +169,28 @@ public class GameEngine {
         int[] cell = randomBorderCell();
         animals.add(new Chicken(cell[0], cell[1]));
         refreshUi();
+    }
+
+    public int countAliveChickens() {
+        int count = 0;
+        synchronized (animals) {
+            for (Animal animal : animals) {
+                if (animal instanceof Chicken && !((Chicken) animal).isDead()) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    public int countEggPowderInWarehouse() {
+        int count = 0;
+        for (Product product : warehouse.getProducts()) {
+            if (product instanceof EggPowder) {
+                count++;
+            }
+        }
+        return count;
     }
 
     public static boolean isPlantCell(int x, int y) {
