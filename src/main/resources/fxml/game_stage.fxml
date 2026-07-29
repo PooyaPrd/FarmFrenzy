@@ -33,21 +33,22 @@
     </top>
 
     <center>
-        <GridPane fx:id="farmGrid" alignment="CENTER" gridLinesVisible="true" styleClass="game-grid">
+        <GridPane fx:id="farmGrid" alignment="CENTER" gridLinesVisible="false" styleClass="game-grid"
+                  maxWidth="-Infinity" maxHeight="-Infinity" BorderPane.alignment="CENTER">
             <columnConstraints>
-                <ColumnConstraints minWidth="90" prefWidth="90"/>
-                <ColumnConstraints minWidth="90" prefWidth="90"/>
-                <ColumnConstraints minWidth="90" prefWidth="90"/>
-                <ColumnConstraints minWidth="90" prefWidth="90"/>
-                <ColumnConstraints minWidth="90" prefWidth="90"/>
-                <ColumnConstraints minWidth="90" prefWidth="90"/>
+                <ColumnConstraints minWidth="96" prefWidth="96" maxWidth="96"/>
+                <ColumnConstraints minWidth="96" prefWidth="96" maxWidth="96"/>
+                <ColumnConstraints minWidth="96" prefWidth="96" maxWidth="96"/>
+                <ColumnConstraints minWidth="96" prefWidth="96" maxWidth="96"/>
+                <ColumnConstraints minWidth="96" prefWidth="96" maxWidth="96"/>
+                <ColumnConstraints minWidth="96" prefWidth="96" maxWidth="96"/>
             </columnConstraints>
             <rowConstraints>
-                <RowConstraints minHeight="80" prefHeight="80"/>
-                <RowConstraints minHeight="80" prefHeight="80"/>
-                <RowConstraints minHeight="80" prefHeight="80"/>
-                <RowConstraints minHeight="80" prefHeight="80"/>
-                <RowConstraints minHeight="80" prefHeight="80"/>
+                <RowConstraints minHeight="64" prefHeight="64" maxHeight="64"/>
+                <RowConstraints minHeight="64" prefHeight="64" maxHeight="64"/>
+                <RowConstraints minHeight="64" prefHeight="64" maxHeight="64"/>
+                <RowConstraints minHeight="64" prefHeight="64" maxHeight="64"/>
+                <RowConstraints minHeight="64" prefHeight="64" maxHeight="64"/>
             </rowConstraints>
         </GridPane>
     </center>

@@ -89,14 +89,14 @@
     -fx-border-width: 3;
     -fx-background-color: #f1f8e9;
     -fx-background-image: url("../images/farm_field.jpg");
-    -fx-background-size: cover;
+    -fx-background-size: 152% 102%;
     -fx-background-repeat: no-repeat;
     -fx-background-position: center;
-    -fx-padding: 5;
+    -fx-padding: 0;
 }
 
 .grid-cell {
-    -fx-border-color: #9e9e9e;
+    -fx-border-color: rgba(255, 255, 255, 0.3);
     -fx-border-width: 1;
     -fx-background-color: transparent;
 }

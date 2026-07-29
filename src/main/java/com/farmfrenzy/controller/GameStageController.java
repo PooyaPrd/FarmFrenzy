@@ -139,7 +139,7 @@ public class GameStageController {
             for (int col = 0; col < COLS; col++) {
                 StackPane cell = new StackPane();
                 cell.getStyleClass().add("grid-cell");
-                cell.setPrefSize(90, 80);
+                cell.setPrefSize(96, 64);
                 final int cellX = col;
                 final int cellY = row;
                 cell.setOnMouseClicked(event -> onCellClicked(cellX, cellY));
