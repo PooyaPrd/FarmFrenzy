@@ -6,6 +6,7 @@ import com.farmfrenzy.exception.InsufficientCoinsException;
 import com.farmfrenzy.exception.OutofWaterException;
 import com.farmfrenzy.exception.WarehouseFullException;
 import com.farmfrenzy.model.Grass;
+import com.farmfrenzy.model.LevelConfig;
 import com.farmfrenzy.model.base.Animal;
 import com.farmfrenzy.model.base.Product;
 import com.farmfrenzy.model.PlayerProgress;
@@ -17,6 +18,7 @@ import com.farmfrenzy.util.SceneSwitcher;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -46,10 +48,6 @@ public class GameStageController {
 
     private static final int ROWS = 5;
     private static final int COLS = 6;
-    private static final int REQUIRED_CHICKENS = 3;
-    private static final int REQUIRED_POWDERS = 5;
-    private static final int GOLD_TIME = 150;
-    private static final int SILVER_TIME = 210;
     private static final int CELL_WIDTH = 84;
     private static final int CELL_HEIGHT = 62;
     private static final int SPRITE_SIZE = 46;
@@ -95,41 +93,24 @@ public class GameStageController {
     private static GameEngine activeGame;
 
     private GameEngine gameEngine;
+    private LevelConfig levelConfig;
     private Timeline refreshLoop;
-    private int requiredCoins;
     private boolean levelFinished;
 
     @FXML
     public void initialize() {
-        requiredCoins = requiredCoinsForLevel(selectedLevel);
         levelFinished = false;
         gameEngine = new GameEngine(selectedLevel);
+        levelConfig = gameEngine.getLevelConfig();
         activeGame = gameEngine;
-        gameEngine.setUiUpdate(() -> onEngineUpdate());
-        objectiveLabel.setText(objectiveText());
+        gameEngine.setUpdateListener(() -> Platform.runLater(() -> onEngineUpdate()));
+        objectiveLabel.setText(levelConfig.describeObjective());
         gameEngine.startGame();
         renderGrid();
         updateLabels();
         refreshLoop = new Timeline(new KeyFrame(Duration.millis(500), event -> refreshScreen()));
         refreshLoop.setCycleCount(Animation.INDEFINITE);
         refreshLoop.play();
-    }
-
-    private int requiredCoinsForLevel(int level) {
-        if (level == 1) {
-            return 150;
-        }
-        if (level == 2) {
-            return 250;
-        }
-        return 400;
-    }
-
-    private String objectiveText() {
-        if (selectedLevel == 2) {
-            return "Objective: " + REQUIRED_CHICKENS + " chickens and " + REQUIRED_POWDERS + " egg powders";
-        }
-        return "Objective: earn " + requiredCoins + " coins";
     }
 
     private void onEngineUpdate() {
@@ -226,7 +207,7 @@ public class GameStageController {
     }
 
     private void onCellClicked(int x, int y) {
-        Product product = findProductAt(x, y);
+        Product product = gameEngine.findProductAt(x, y);
         if (product != null) {
             try {
                 gameEngine.collectProduct(product);
@@ -246,15 +227,6 @@ public class GameStageController {
             showError(e.getMessage());
         }
         renderGrid();
-    }
-
-    private Product findProductAt(int x, int y) {
-        for (Product product : gameEngine.getDroppedProducts()) {
-            if (product.getX() == x && product.getY() == y) {
-                return product;
-            }
-        }
-        return null;
     }
 
     @FXML
@@ -330,11 +302,11 @@ public class GameStageController {
     }
 
     private boolean isObjectiveDone() {
-        if (selectedLevel == 2) {
-            return gameEngine.countAliveChickens() >= REQUIRED_CHICKENS
-                    && gameEngine.countEggPowderInWarehouse() >= REQUIRED_POWDERS;
+        if (levelConfig.isProductionLevel()) {
+            return gameEngine.countAliveChickens() >= levelConfig.getChickenGoal()
+                    && gameEngine.countEggPowderInWarehouse() >= levelConfig.getPowderGoal();
         }
-        return gameEngine.getCoins() >= requiredCoins;
+        return gameEngine.getCoins() >= levelConfig.getCoinGoal();
     }
 
     private void saveProgress(int earnedCoins) {
@@ -352,19 +324,10 @@ public class GameStageController {
     }
 
     private int calculateStars(int seconds) {
-        if (selectedLevel == 2) {
-            if (seconds <= GOLD_TIME) {
-                return 3;
-            }
-            if (seconds <= SILVER_TIME) {
-                return 2;
-            }
-            return 1;
-        }
-        if (seconds <= 120) {
+        if (seconds <= levelConfig.getGoldTime()) {
             return 3;
         }
-        if (seconds <= 240) {
+        if (seconds <= levelConfig.getSilverTime()) {
             return 2;
         }
         return 1;
@@ -374,14 +337,14 @@ public class GameStageController {
         if (refreshLoop != null) {
             refreshLoop.stop();
         }
-        gameEngine.setUiUpdate(null);
+        gameEngine.setUpdateListener(null);
         gameEngine.stopGame();
         activeGame = null;
     }
 
     public static void shutdownActiveGame() {
         if (activeGame != null) {
-            activeGame.setUiUpdate(null);
+            activeGame.setUpdateListener(null);
             activeGame.stopGame();
             activeGame = null;
         }

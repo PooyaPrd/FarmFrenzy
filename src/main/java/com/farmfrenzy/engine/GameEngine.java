@@ -7,22 +7,17 @@ import com.farmfrenzy.model.Chicken;
 import com.farmfrenzy.model.Egg;
 import com.farmfrenzy.model.EggPowder;
 import com.farmfrenzy.model.EggPowderMachine;
+import com.farmfrenzy.model.Farm;
 import com.farmfrenzy.model.Grass;
+import com.farmfrenzy.model.LevelConfig;
 import com.farmfrenzy.model.Warehouse;
 import com.farmfrenzy.model.WaterWell;
 import com.farmfrenzy.model.base.Animal;
 import com.farmfrenzy.model.base.Product;
 import com.farmfrenzy.model.enums.AnimalState;
 
-import javafx.application.Platform;
-
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Random;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 public class GameEngine {
 
@@ -31,69 +26,47 @@ public class GameEngine {
     public static final int LAST_PLANT_COLUMN = 3;
     public static final int FIRST_PLANT_ROW = 1;
     public static final int LAST_PLANT_ROW = 3;
-    public static final int LEVEL_TWO_COINS = 20;
-    public static final int LEVEL_TWO_CHICKENS = 2;
-    public static final int NORMAL_COINS = 60;
 
-    private ExecutorService executor;
-    private int level;
-    private int coins;
-    private int levelTime;
-    private List<Animal> animals;
-    private List<Product> droppedProducts;
-    private List<Grass> grassList;
+    private LevelConfig levelConfig;
+    private Farm farm;
     private Warehouse warehouse;
     private WaterWell waterWell;
     private EggPowderMachine eggPowderMachine;
-    private volatile boolean isRunning;
-    private Random random;
-    private Runnable uiUpdate;
+    private GameLoop gameLoop;
+    private int coins;
+    private int levelTime;
+    private volatile GameUpdateListener updateListener;
 
     public GameEngine(int level) {
-        this.level = level;
-        this.levelTime = 0;
-        this.animals = Collections.synchronizedList(new ArrayList<>());
-        this.droppedProducts = Collections.synchronizedList(new ArrayList<>());
-        this.grassList = Collections.synchronizedList(new ArrayList<>());
+        this.levelConfig = LevelConfig.forLevel(level);
+        this.farm = new Farm();
         this.warehouse = new Warehouse();
         this.waterWell = new WaterWell();
         this.eggPowderMachine = new EggPowderMachine("machine1", 0, 2);
-        this.isRunning = false;
-        this.random = new Random();
+        this.gameLoop = new GameLoop(this);
+        this.levelTime = 0;
         setupLevel();
     }
 
     private void setupLevel() {
-        if (level == 2) {
-            coins = LEVEL_TWO_COINS;
-            addStartingChickens(LEVEL_TWO_CHICKENS);
-        } else {
-            coins = NORMAL_COINS;
+        coins = levelConfig.getStartingCoins();
+        for (int i = 0; i < levelConfig.getStartingChickens(); i++) {
+            int[] cell = farm.randomBorderCell();
+            farm.addAnimal(new Chicken(cell[0], cell[1]));
         }
         waterWell.refill();
     }
 
-    private void addStartingChickens(int count) {
-        for (int i = 0; i < count; i++) {
-            int[] cell = randomBorderCell();
-            animals.add(new Chicken(cell[0], cell[1]));
-        }
+    public LevelConfig getLevelConfig() {
+        return levelConfig;
     }
 
     public int getLevel() {
-        return level;
+        return levelConfig.getLevel();
     }
 
-    public synchronized int getCoins() {
-        return coins;
-    }
-
-    public synchronized void setCoins(int coins) {
-        this.coins = coins;
-    }
-
-    public synchronized int getLevelTime() {
-        return levelTime;
+    public Farm getFarm() {
+        return farm;
     }
 
     public Warehouse getWarehouse() {
@@ -108,89 +81,48 @@ public class GameEngine {
         return eggPowderMachine;
     }
 
-    public boolean isRunning() {
-        return isRunning;
+    public synchronized int getCoins() {
+        return coins;
     }
 
-    public void setUiUpdate(Runnable uiUpdate) {
-        this.uiUpdate = uiUpdate;
+    public synchronized void setCoins(int coins) {
+        this.coins = coins;
+    }
+
+    public synchronized int getLevelTime() {
+        return levelTime;
+    }
+
+    public boolean isRunning() {
+        return gameLoop.isRunning();
+    }
+
+    public void setUpdateListener(GameUpdateListener updateListener) {
+        this.updateListener = updateListener;
     }
 
     public List<Animal> getAnimals() {
-        synchronized (animals) {
-            return new ArrayList<>(animals);
-        }
+        return farm.getAnimals();
     }
 
     public List<Product> getDroppedProducts() {
-        synchronized (droppedProducts) {
-            return new ArrayList<>(droppedProducts);
-        }
+        return farm.getDroppedProducts();
     }
 
     public List<Grass> getGrassList() {
-        synchronized (grassList) {
-            return new ArrayList<>(grassList);
-        }
+        return farm.getGrassList();
+    }
+
+    public Product findProductAt(int x, int y) {
+        return farm.findProductAt(x, y);
     }
 
     public void startGame() {
-        if (isRunning) {
-            return;
-        }
-        isRunning = true;
-        executor = Executors.newFixedThreadPool(5);
-        executor.submit(() -> updateAnimals());
-        executor.submit(() -> updateProducts());
-        executor.submit(() -> updateGameTimer());
+        gameLoop.start();
     }
 
     public void stopGame() {
-        isRunning = false;
-        if (executor == null) {
-            return;
-        }
-        executor.shutdown();
-        try {
-            if (!executor.awaitTermination(2, TimeUnit.SECONDS)) {
-                executor.shutdownNow();
-            }
-        } catch (InterruptedException e) {
-            executor.shutdownNow();
-            Thread.currentThread().interrupt();
-        }
-    }
-
-    public synchronized void buyChicken() throws InsufficientCoinsException {
-        if (coins < CHICKEN_COST) {
-            throw new InsufficientCoinsException("You need " + CHICKEN_COST + " coins to buy a chicken");
-        }
-        coins -= CHICKEN_COST;
-        int[] cell = randomBorderCell();
-        animals.add(new Chicken(cell[0], cell[1]));
-        refreshUi();
-    }
-
-    public int countAliveChickens() {
-        int count = 0;
-        synchronized (animals) {
-            for (Animal animal : animals) {
-                if (animal instanceof Chicken && !((Chicken) animal).isDead()) {
-                    count++;
-                }
-            }
-        }
-        return count;
-    }
-
-    public int countEggPowderInWarehouse() {
-        int count = 0;
-        for (Product product : warehouse.getProducts()) {
-            if (product instanceof EggPowder) {
-                count++;
-            }
-        }
-        return count;
+        gameLoop.stop();
     }
 
     public static boolean isPlantCell(int x, int y) {
@@ -198,32 +130,21 @@ public class GameEngine {
                 && y >= FIRST_PLANT_ROW && y <= LAST_PLANT_ROW;
     }
 
-    private int[] randomBorderCell() {
-        int x = random.nextInt(Chicken.COLS);
-        int y = random.nextInt(Chicken.ROWS);
-        if (!Chicken.isBorderCell(x, y)) {
-            if (random.nextBoolean()) {
-                if (random.nextBoolean()) {
-                    x = 0;
-                } else {
-                    x = Chicken.COLS - 1;
-                }
-            } else {
-                if (random.nextBoolean()) {
-                    y = 0;
-                } else {
-                    y = Chicken.ROWS - 1;
-                }
-            }
+    public synchronized void buyChicken() throws InsufficientCoinsException {
+        if (coins < CHICKEN_COST) {
+            throw new InsufficientCoinsException("You need " + CHICKEN_COST + " coins to buy a chicken");
         }
-        return new int[]{x, y};
+        coins -= CHICKEN_COST;
+        int[] cell = farm.randomBorderCell();
+        farm.addAnimal(new Chicken(cell[0], cell[1]));
+        notifyUpdate();
     }
 
     public synchronized boolean plantGrass(int x, int y) throws OutofWaterException {
         if (!isPlantCell(x, y)) {
             return false;
         }
-        if (findGrassAt(x, y) != null) {
+        if (farm.findGrassAt(x, y) != null) {
             return false;
         }
         if (x == eggPowderMachine.getX() && y == eggPowderMachine.getY()) {
@@ -232,8 +153,8 @@ public class GameEngine {
         if (!waterWell.useWater()) {
             throw new OutofWaterException("The well is empty, refill it first");
         }
-        grassList.add(new Grass(x, y));
-        refreshUi();
+        farm.addGrass(new Grass(x, y));
+        notifyUpdate();
         return true;
     }
 
@@ -244,7 +165,7 @@ public class GameEngine {
         }
         coins = coins - cost;
         waterWell.refill();
-        refreshUi();
+        notifyUpdate();
     }
 
     public synchronized void collectProduct(Product p) throws WarehouseFullException {
@@ -254,14 +175,14 @@ public class GameEngine {
         if (!warehouse.addProduct(p)) {
             throw new WarehouseFullException("The warehouse is full");
         }
-        droppedProducts.remove(p);
-        refreshUi();
+        farm.removeProduct(p);
+        notifyUpdate();
     }
 
     public synchronized void sellProductFromWarehouse(Product p) {
         if (warehouse.removeProduct(p)) {
             coins += p.getPrice();
-            refreshUi();
+            notifyUpdate();
         }
     }
 
@@ -275,46 +196,55 @@ public class GameEngine {
         }
         warehouse.removeProduct(egg);
         eggPowderMachine.start();
-        refreshUi();
-        executor.submit(() -> runMachine());
+        notifyUpdate();
+        gameLoop.submit(() -> runMachine());
     }
 
-    private void runMachine() {
-        sleepSeconds(eggPowderMachine.getProcessingTime());
-        eggPowderMachine.process();
-        List<EggPowder> ready = eggPowderMachine.takeOutputs();
-        synchronized (droppedProducts) {
-            droppedProducts.addAll(ready);
-        }
-        refreshUi();
+    public int countAliveChickens() {
+        return farm.countAliveChickens();
     }
 
-    private Egg findEggInWarehouse() {
-        List<Product> products = warehouse.getProducts();
-        for (Product p : products) {
-            if (p instanceof Egg) {
-                return (Egg) p;
+    public int countEggPowderInWarehouse() {
+        int count = 0;
+        for (Product product : warehouse.getProducts()) {
+            if (product instanceof EggPowder) {
+                count++;
             }
         }
-        return null;
+        return count;
     }
 
-    private void updateAnimals() {
-        while (isRunning) {
-            synchronized (animals) {
-                List<Animal> dead = new ArrayList<>();
-                for (Animal animal : animals) {
-                    if (animal instanceof Chicken) {
-                        updateChicken((Chicken) animal, dead);
-                    } else {
-                        animal.move();
-                    }
-                }
-                animals.removeAll(dead);
+    void tickAnimals() {
+        List<Animal> dead = new ArrayList<>();
+        for (Animal animal : farm.getAnimals()) {
+            if (animal instanceof Chicken) {
+                updateChicken((Chicken) animal, dead);
+            } else {
+                animal.move();
             }
-            refreshUi();
-            sleepSeconds(1);
         }
+        farm.removeAnimals(dead);
+        notifyUpdate();
+    }
+
+    void tickProducts() {
+        List<Product> expired = new ArrayList<>();
+        for (Product product : farm.getDroppedProducts()) {
+            product.setLifespan(product.getLifespan() - 1);
+            if (product.getLifespan() <= 0) {
+                product.expire();
+                expired.add(product);
+            }
+        }
+        farm.removeProducts(expired);
+        notifyUpdate();
+    }
+
+    void tickTimer() {
+        synchronized (this) {
+            levelTime++;
+        }
+        notifyUpdate();
     }
 
     private void updateChicken(Chicken chicken, List<Animal> dead) {
@@ -324,91 +254,42 @@ public class GameEngine {
             return;
         }
         if (chicken.getState() == AnimalState.HUNGRY) {
-            chicken.setTarget(findClosestGrass(chicken.getX(), chicken.getY()));
+            chicken.setTarget(farm.findClosestGrass(chicken.getX(), chicken.getY()));
         }
         chicken.move();
-        Grass grass = findGrassAt(chicken.getX(), chicken.getY());
+        Grass grass = farm.findGrassAt(chicken.getX(), chicken.getY());
         if (grass != null) {
             chicken.eat(grass);
-            grassList.remove(grass);
+            farm.removeGrass(grass);
         }
         chicken.reduceEggCooldown();
         chicken.produceProduct();
         Egg egg = chicken.takeEgg();
         if (egg != null) {
-            droppedProducts.add(egg);
+            farm.addProduct(egg);
         }
     }
 
-    private void updateProducts() {
-        while (isRunning) {
-            synchronized (droppedProducts) {
-                List<Product> expired = new ArrayList<>();
-                for (Product p : droppedProducts) {
-                    p.setLifespan(p.getLifespan() - 1);
-                    if (p.getLifespan() <= 0) {
-                        p.expire();
-                        expired.add(p);
-                    }
-                }
-                droppedProducts.removeAll(expired);
-            }
-            refreshUi();
-            sleepSeconds(1);
-        }
+    private void runMachine() {
+        GameLoop.sleepSeconds(eggPowderMachine.getProcessingTime());
+        eggPowderMachine.process();
+        farm.addProducts(eggPowderMachine.takeOutputs());
+        notifyUpdate();
     }
 
-    private void updateGameTimer() {
-        while (isRunning) {
-            sleepSeconds(1);
-            synchronized (this) {
-                levelTime++;
-            }
-            refreshUi();
-        }
-    }
-
-    private Grass findGrassAt(int x, int y) {
-        synchronized (grassList) {
-            for (Grass grass : grassList) {
-                if (grass.getX() == x && grass.getY() == y && !grass.isEaten()) {
-                    return grass;
-                }
+    private Egg findEggInWarehouse() {
+        for (Product p : warehouse.getProducts()) {
+            if (p instanceof Egg) {
+                return (Egg) p;
             }
         }
         return null;
     }
 
-    private Grass findClosestGrass(int x, int y) {
-        Grass closest = null;
-        int bestDistance = Integer.MAX_VALUE;
-        synchronized (grassList) {
-            for (Grass grass : grassList) {
-                if (grass.isEaten()) {
-                    continue;
-                }
-                int distance = Math.abs(grass.getX() - x) + Math.abs(grass.getY() - y);
-                if (distance < bestDistance) {
-                    bestDistance = distance;
-                    closest = grass;
-                }
-            }
-        }
-        return closest;
-    }
-
-    private void refreshUi() {
-        if (uiUpdate != null) {
-            Platform.runLater(uiUpdate);
-        }
-    }
-
-    private void sleepSeconds(int seconds) {
-        try {
-            Thread.sleep(seconds * 1000L);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            isRunning = false;
+    private void notifyUpdate() {
+        GameUpdateListener listener = updateListener;
+        if (listener != null) {
+            listener.onGameUpdated();
         }
     }
 }
