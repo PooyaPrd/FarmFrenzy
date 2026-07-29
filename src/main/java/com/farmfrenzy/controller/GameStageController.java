@@ -98,7 +98,7 @@ public class GameStageController {
         levelFinished = false;
         gameEngine = new GameEngine(60);
         activeGame = gameEngine;
-        gameEngine.setUiUpdate(this::updateLabels);
+        gameEngine.setUiUpdate(() -> updateLabels());
         objectiveLabel.setText("Objective: earn " + requiredCoins + " coins");
         gameEngine.startGame();
         renderGrid();
@@ -139,7 +139,7 @@ public class GameStageController {
             for (int col = 0; col < COLS; col++) {
                 StackPane cell = new StackPane();
                 cell.getStyleClass().add("grid-cell");
-                cell.setPrefSize(96, 64);
+                cell.setPrefSize(96, 78);
                 final int cellX = col;
                 final int cellY = row;
                 cell.setOnMouseClicked(event -> onCellClicked(cellX, cellY));
@@ -147,7 +147,7 @@ public class GameStageController {
             }
         }
         for (Grass grass : gameEngine.getGrassList()) {
-            addToCell(grass.getX(), grass.getY(), createNode("/images/grass.jpg", "Grass"));
+            addToCell(grass.getX(), grass.getY(), createNode("/images/grass.png", "Grass"));
         }
         EggPowderMachine machine = gameEngine.getEggPowderMachine();
         addToCell(machine.getX(), machine.getY(), createNode(machine.getImagePath(), machine.getName()));
@@ -161,7 +161,7 @@ public class GameStageController {
 
     private String animalImage(Animal animal) {
         if (animal.getState() == AnimalState.HUNGRY) {
-            return "/images/chicken_hungry.jpg";
+            return "/images/chicken_hungry.png";
         }
         return animal.getImagePath();
     }

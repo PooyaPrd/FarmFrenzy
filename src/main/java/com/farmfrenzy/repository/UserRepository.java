@@ -34,7 +34,7 @@ public class UserRepository {
             }
             return null;
         } catch (SQLException e) {
-            System.out.println("Could not read user: " + e.getMessage());
+            e.printStackTrace();
             return null;
         }
     }

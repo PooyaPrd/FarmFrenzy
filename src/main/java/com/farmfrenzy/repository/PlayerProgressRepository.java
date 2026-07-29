@@ -38,7 +38,7 @@ public class PlayerProgressRepository {
             }
             return null;
         } catch (SQLException e) {
-            System.out.println("Could not read progress: " + e.getMessage());
+            e.printStackTrace();
             return null;
         }
     }

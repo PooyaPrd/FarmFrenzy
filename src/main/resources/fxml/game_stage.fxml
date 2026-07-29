@@ -21,7 +21,7 @@
                 <graphic>
                     <ImageView fitWidth="24" fitHeight="24" preserveRatio="true">
                         <image>
-                            <Image url="@../images/coin.jpg" requestedWidth="24" requestedHeight="24" preserveRatio="true" smooth="true"/>
+                            <Image url="@../images/coin.png" requestedWidth="24" requestedHeight="24" preserveRatio="true" smooth="true"/>
                         </image>
                     </ImageView>
                 </graphic>
@@ -44,11 +44,11 @@
                 <ColumnConstraints minWidth="96" prefWidth="96" maxWidth="96"/>
             </columnConstraints>
             <rowConstraints>
-                <RowConstraints minHeight="64" prefHeight="64" maxHeight="64"/>
-                <RowConstraints minHeight="64" prefHeight="64" maxHeight="64"/>
-                <RowConstraints minHeight="64" prefHeight="64" maxHeight="64"/>
-                <RowConstraints minHeight="64" prefHeight="64" maxHeight="64"/>
-                <RowConstraints minHeight="64" prefHeight="64" maxHeight="64"/>
+                <RowConstraints minHeight="78" prefHeight="78" maxHeight="78"/>
+                <RowConstraints minHeight="78" prefHeight="78" maxHeight="78"/>
+                <RowConstraints minHeight="78" prefHeight="78" maxHeight="78"/>
+                <RowConstraints minHeight="78" prefHeight="78" maxHeight="78"/>
+                <RowConstraints minHeight="78" prefHeight="78" maxHeight="78"/>
             </rowConstraints>
         </GridPane>
     </center>
@@ -61,7 +61,7 @@
                 <graphic>
                     <ImageView fitWidth="32" fitHeight="32" preserveRatio="true">
                         <image>
-                            <Image url="@../images/water_well.jpg" requestedWidth="32" requestedHeight="32" preserveRatio="true" smooth="true"/>
+                            <Image url="@../images/water_well.png" requestedWidth="32" requestedHeight="32" preserveRatio="true" smooth="true"/>
                         </image>
                     </ImageView>
                 </graphic>
@@ -70,7 +70,7 @@
                 <graphic>
                     <ImageView fitWidth="32" fitHeight="32" preserveRatio="true">
                         <image>
-                            <Image url="@../images/warehouse.jpg" requestedWidth="32" requestedHeight="32" preserveRatio="true" smooth="true"/>
+                            <Image url="@../images/warehouse.png" requestedWidth="32" requestedHeight="32" preserveRatio="true" smooth="true"/>
                         </image>
                     </ImageView>
                 </graphic>
@@ -79,7 +79,7 @@
                 <graphic>
                     <ImageView fitWidth="32" fitHeight="32" preserveRatio="true">
                         <image>
-                            <Image url="@../images/egg_powder_machine.jpg" requestedWidth="32" requestedHeight="32" preserveRatio="true" smooth="true"/>
+                            <Image url="@../images/egg_powder_machine.png" requestedWidth="32" requestedHeight="32" preserveRatio="true" smooth="true"/>
                         </image>
                     </ImageView>
                 </graphic>
@@ -93,7 +93,7 @@
                 <graphic>
                     <ImageView fitWidth="24" fitHeight="24" preserveRatio="true">
                         <image>
-                            <Image url="@../images/water_drop.jpg" requestedWidth="24" requestedHeight="24" preserveRatio="true" smooth="true"/>
+                            <Image url="@../images/water_drop.png" requestedWidth="24" requestedHeight="24" preserveRatio="true" smooth="true"/>
                         </image>
                     </ImageView>
                 </graphic>

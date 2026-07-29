@@ -37,7 +37,7 @@ public class LevelSelectionController {
             return;
         }
         button.setDisable(true);
-        InputStream stream = getClass().getResourceAsStream("/images/lock.jpg");
+        InputStream stream = getClass().getResourceAsStream("/images/lock.png");
         if (stream == null) {
             return;
         }

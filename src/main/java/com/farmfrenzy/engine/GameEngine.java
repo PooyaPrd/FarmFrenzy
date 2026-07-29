@@ -111,9 +111,9 @@ public class GameEngine {
         }
         isRunning = true;
         executor = Executors.newFixedThreadPool(5);
-        executor.submit(this::updateAnimals);
-        executor.submit(this::updateProducts);
-        executor.submit(this::updateGameTimer);
+        executor.submit(() -> updateAnimals());
+        executor.submit(() -> updateProducts());
+        executor.submit(() -> updateGameTimer());
     }
 
     public void stopGame() {
@@ -136,7 +136,7 @@ public class GameEngine {
         if (coins < CHICKEN_COST) {
             throw new InsufficientCoinsException("You need " + CHICKEN_COST + " coins to buy a chicken");
         }
-        coins = coins - CHICKEN_COST;
+        coins -= CHICKEN_COST;
         int x = random.nextInt(Chicken.COLS);
         int y = random.nextInt(Chicken.ROWS);
         animals.add(new Chicken(x, y));
@@ -174,7 +174,7 @@ public class GameEngine {
 
     public synchronized void sellProductFromWarehouse(Product p) {
         if (warehouse.removeProduct(p)) {
-            coins = coins + p.getPrice();
+            coins += p.getPrice();
             refreshUi();
         }
     }
@@ -190,7 +190,7 @@ public class GameEngine {
         warehouse.removeProduct(egg);
         eggPowderMachine.start();
         refreshUi();
-        executor.submit(this::runMachine);
+        executor.submit(() -> runMachine());
     }
 
     private void runMachine() {

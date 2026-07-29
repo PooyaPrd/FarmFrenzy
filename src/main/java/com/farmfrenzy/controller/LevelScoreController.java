@@ -44,7 +44,7 @@ public class LevelScoreController {
     private void showStars() {
         starsBox.getChildren().clear();
         for (int i = 0; i < stars; i++) {
-            InputStream stream = getClass().getResourceAsStream("/images/star.jpg");
+            InputStream stream = getClass().getResourceAsStream("/images/star.png");
             if (stream == null) {
                 return;
             }
