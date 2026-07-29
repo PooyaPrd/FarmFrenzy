@@ -12,7 +12,7 @@ public abstract class DomesticAnimal extends Animal {
     public DomesticAnimal(String id, String name, double speed, String imagePath, int x, int y,
                           int maxHunger, ProductType productType) {
         super(id, name, speed, imagePath, x, y);
-        this.hunger = 0;
+        this.hunger = maxHunger;
         this.maxHunger = maxHunger;
         this.productType = productType;
     }
@@ -42,16 +42,14 @@ public abstract class DomesticAnimal extends Animal {
     }
 
     public void feed() {
-        this.hunger = 0;
+        this.hunger = maxHunger;
         changeState(AnimalState.EATING);
     }
 
-    public void increaseHunger() {
-        if (hunger < maxHunger) {
-            hunger++;
-        }
-        if (hunger >= maxHunger) {
-            changeState(AnimalState.HUNGRY);
+    public void decreaseHunger(int amount) {
+        hunger -= amount;
+        if (hunger < 0) {
+            hunger = 0;
         }
     }
 

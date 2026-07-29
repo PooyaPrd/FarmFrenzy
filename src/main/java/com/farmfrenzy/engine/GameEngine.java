@@ -11,7 +11,6 @@ import com.farmfrenzy.model.Grass;
 import com.farmfrenzy.model.Warehouse;
 import com.farmfrenzy.model.WaterWell;
 import com.farmfrenzy.model.base.Animal;
-import com.farmfrenzy.model.base.DomesticAnimal;
 import com.farmfrenzy.model.base.Product;
 import com.farmfrenzy.model.enums.AnimalState;
 
@@ -137,10 +136,30 @@ public class GameEngine {
             throw new InsufficientCoinsException("You need " + CHICKEN_COST + " coins to buy a chicken");
         }
         coins -= CHICKEN_COST;
+        int[] cell = randomBorderCell();
+        animals.add(new Chicken(cell[0], cell[1]));
+        refreshUi();
+    }
+
+    private int[] randomBorderCell() {
         int x = random.nextInt(Chicken.COLS);
         int y = random.nextInt(Chicken.ROWS);
-        animals.add(new Chicken(x, y));
-        refreshUi();
+        if (!Chicken.isBorderCell(x, y)) {
+            if (random.nextBoolean()) {
+                if (random.nextBoolean()) {
+                    x = 0;
+                } else {
+                    x = Chicken.COLS - 1;
+                }
+            } else {
+                if (random.nextBoolean()) {
+                    y = 0;
+                } else {
+                    y = Chicken.ROWS - 1;
+                }
+            }
+        }
+        return new int[]{x, y};
     }
 
     public synchronized void plantGrass(int x, int y) throws OutofWaterException {
@@ -218,47 +237,39 @@ public class GameEngine {
             synchronized (animals) {
                 List<Animal> dead = new ArrayList<>();
                 for (Animal animal : animals) {
-                    if (animal instanceof DomesticAnimal) {
-                        updateDomesticAnimal((DomesticAnimal) animal, dead);
+                    if (animal instanceof Chicken) {
+                        updateChicken((Chicken) animal, dead);
                     } else {
                         animal.move();
                     }
                 }
                 animals.removeAll(dead);
             }
-            removeEatenGrass();
             refreshUi();
             sleepSeconds(1);
         }
     }
 
-    private void updateDomesticAnimal(DomesticAnimal animal, List<Animal> dead) {
-        Grass grass = findGrassAt(animal.getX(), animal.getY());
-        if (grass != null && animal.getHunger() > 0) {
-            animal.feed();
-            grassList.remove(grass);
-        } else if (animal.getHunger() >= animal.getMaxHunger()) {
-            animal.changeState(AnimalState.DEAD);
-            dead.add(animal);
+    private void updateChicken(Chicken chicken, List<Animal> dead) {
+        chicken.loseHunger();
+        if (chicken.isDead()) {
+            dead.add(chicken);
             return;
-        } else {
-            animal.increaseHunger();
         }
-        if (animal instanceof Chicken) {
-            Chicken chicken = (Chicken) animal;
-            if (chicken.getState() == AnimalState.HUNGRY) {
-                chicken.setTarget(findClosestGrass(chicken.getX(), chicken.getY()));
-            }
-            chicken.move();
-            if (random.nextInt(5) == 0) {
-                chicken.produceProduct();
-                Egg egg = chicken.takeEgg();
-                if (egg != null) {
-                    droppedProducts.add(egg);
-                }
-            }
-        } else {
-            animal.move();
+        if (chicken.getState() == AnimalState.HUNGRY) {
+            chicken.setTarget(findClosestGrass(chicken.getX(), chicken.getY()));
+        }
+        chicken.move();
+        Grass grass = findGrassAt(chicken.getX(), chicken.getY());
+        if (grass != null) {
+            chicken.eat(grass);
+            grassList.remove(grass);
+        }
+        chicken.reduceEggCooldown();
+        chicken.produceProduct();
+        Egg egg = chicken.takeEgg();
+        if (egg != null) {
+            droppedProducts.add(egg);
         }
     }
 
@@ -317,18 +328,6 @@ public class GameEngine {
             }
         }
         return closest;
-    }
-
-    private void removeEatenGrass() {
-        synchronized (grassList) {
-            List<Grass> eaten = new ArrayList<>();
-            for (Grass grass : grassList) {
-                if (grass.isEaten()) {
-                    eaten.add(grass);
-                }
-            }
-            grassList.removeAll(eaten);
-        }
     }
 
     private void refreshUi() {
