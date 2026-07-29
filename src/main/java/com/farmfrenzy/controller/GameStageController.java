@@ -8,7 +8,10 @@ import com.farmfrenzy.model.EggPowderMachine;
 import com.farmfrenzy.model.Grass;
 import com.farmfrenzy.model.base.Animal;
 import com.farmfrenzy.model.base.Product;
+import com.farmfrenzy.model.User;
 import com.farmfrenzy.model.enums.AnimalState;
+import com.farmfrenzy.repository.PlayerProgressRepository;
+import com.farmfrenzy.repository.UserRepository;
 import com.farmfrenzy.util.SceneSwitcher;
 
 import javafx.animation.Animation;
@@ -42,6 +45,7 @@ public class GameStageController {
 
     private static final int ROWS = 5;
     private static final int COLS = 6;
+    private static final String PLAYER_NAME = "pouya";
 
     @FXML
     private GridPane farmGrid;
@@ -81,6 +85,8 @@ public class GameStageController {
 
     private static final Map<String, Image> images = new HashMap<>();
 
+    private static GameEngine activeGame;
+
     private GameEngine gameEngine;
     private Timeline refreshLoop;
     private int requiredCoins;
@@ -91,6 +97,7 @@ public class GameStageController {
         requiredCoins = requiredCoinsForLevel(selectedLevel);
         levelFinished = false;
         gameEngine = new GameEngine(60);
+        activeGame = gameEngine;
         gameEngine.setUiUpdate(this::updateLabels);
         objectiveLabel.setText("Objective: earn " + requiredCoins + " coins");
         gameEngine.startGame();
@@ -291,10 +298,24 @@ public class GameStageController {
         if (selectedLevel + 1 > LevelSelectionController.unlockedLevel) {
             LevelSelectionController.unlockedLevel = selectedLevel + 1;
         }
+        saveProgress(earned);
         LevelScoreController.stars = calculateStars(seconds);
         LevelScoreController.coinsEarned = earned;
         LevelScoreController.timeTaken = seconds;
         SceneSwitcher.switchTo(farmGrid, "level_score.fxml");
+    }
+
+    private void saveProgress(int earnedCoins) {
+        UserRepository userRepository = new UserRepository();
+        User player = userRepository.getUser(PLAYER_NAME);
+        if (player == null) {
+            userRepository.saveUser(PLAYER_NAME, "1234");
+            player = userRepository.getUser(PLAYER_NAME);
+        }
+        if (player != null) {
+            PlayerProgressRepository progressRepository = new PlayerProgressRepository();
+            progressRepository.saveProgress(player.getId(), selectedLevel, earnedCoins);
+        }
     }
 
     private int calculateStars(int seconds) {
@@ -313,6 +334,15 @@ public class GameStageController {
         }
         gameEngine.setUiUpdate(null);
         gameEngine.stopGame();
+        activeGame = null;
+    }
+
+    public static void shutdownActiveGame() {
+        if (activeGame != null) {
+            activeGame.setUiUpdate(null);
+            activeGame.stopGame();
+            activeGame = null;
+        }
     }
 
     private void showError(String message) {

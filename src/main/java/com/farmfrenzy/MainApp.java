@@ -1,5 +1,7 @@
 package com.farmfrenzy;
 
+import com.farmfrenzy.controller.GameStageController;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -11,12 +13,17 @@ public class MainApp extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/main_menu.fxml"));
-        Scene scene = new Scene(root, 1000, 700);
+        Scene scene = new Scene(root, 800, 600);
         scene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
         stage.setTitle("Farm Frenzy 2");
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();
+    }
+
+    @Override
+    public void stop() {
+        GameStageController.shutdownActiveGame();
     }
 
     public static void main(String[] args) {

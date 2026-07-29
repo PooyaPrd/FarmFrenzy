@@ -14,7 +14,7 @@ public class SceneSwitcher {
         try {
             Parent root = FXMLLoader.load(SceneSwitcher.class.getResource("/fxml/" + fxmlName));
             Stage stage = (Stage) source.getScene().getWindow();
-            stage.setScene(new Scene(root, 1000, 700));
+            stage.setScene(new Scene(root, 800, 600));
         } catch (IOException e) {
             System.out.println("Could not open " + fxmlName + ": " + e.getMessage());
         }
