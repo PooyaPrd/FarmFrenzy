@@ -162,12 +162,19 @@ public class GameEngine {
         return new int[]{x, y};
     }
 
-    public synchronized void plantGrass(int x, int y) throws OutofWaterException {
+    public synchronized boolean plantGrass(int x, int y) throws OutofWaterException {
+        if (findGrassAt(x, y) != null) {
+            return false;
+        }
+        if (x == eggPowderMachine.getX() && y == eggPowderMachine.getY()) {
+            return false;
+        }
         if (!waterWell.useWater()) {
             throw new OutofWaterException("The well is empty, refill it first");
         }
         grassList.add(new Grass(x, y));
         refreshUi();
+        return true;
     }
 
     public synchronized void refillWell() throws InsufficientCoinsException {

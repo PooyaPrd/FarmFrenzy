@@ -217,8 +217,11 @@ public class GameStageController {
             return;
         }
         try {
-            gameEngine.plantGrass(x, y);
-            messageLabel.setText("Grass planted");
+            if (gameEngine.plantGrass(x, y)) {
+                messageLabel.setText("Grass planted");
+            } else {
+                messageLabel.setText("You cannot plant grass here");
+            }
         } catch (OutofWaterException e) {
             showError(e.getMessage());
         }
