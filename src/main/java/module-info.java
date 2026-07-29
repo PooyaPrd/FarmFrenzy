@@ -1,6 +1,7 @@
 module com.farmfrenzy {
     requires javafx.controls;
     requires javafx.fxml;
+    requires javafx.media;
     requires java.sql;
 
     opens com.farmfrenzy to javafx.fxml;

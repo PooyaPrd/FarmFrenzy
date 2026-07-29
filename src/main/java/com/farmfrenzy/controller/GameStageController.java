@@ -12,11 +12,13 @@ import com.farmfrenzy.model.base.Product;
 import com.farmfrenzy.model.PlayerProgress;
 import com.farmfrenzy.model.User;
 import com.farmfrenzy.model.enums.AnimalState;
+import com.farmfrenzy.model.enums.MachineState;
 import com.farmfrenzy.repository.PlayerProgressRepository;
 import com.farmfrenzy.util.SceneSwitcher;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
+import javafx.animation.ScaleTransition;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -95,6 +97,7 @@ public class GameStageController {
     private GameEngine gameEngine;
     private LevelConfig levelConfig;
     private Timeline refreshLoop;
+    private ScaleTransition machinePulse;
     private boolean levelFinished;
 
     @FXML
@@ -111,6 +114,30 @@ public class GameStageController {
         refreshLoop = new Timeline(new KeyFrame(Duration.millis(500), event -> refreshScreen()));
         refreshLoop.setCycleCount(Animation.INDEFINITE);
         refreshLoop.play();
+        setupMachinePulse();
+    }
+
+    private void setupMachinePulse() {
+        machinePulse = new ScaleTransition(Duration.millis(600), machineImage);
+        machinePulse.setFromX(1.0);
+        machinePulse.setFromY(1.0);
+        machinePulse.setToX(1.1);
+        machinePulse.setToY(1.1);
+        machinePulse.setCycleCount(Animation.INDEFINITE);
+        machinePulse.setAutoReverse(true);
+    }
+
+    private void updateMachinePulse() {
+        boolean working = gameEngine.getEggPowderMachine().getState() == MachineState.WORKING;
+        if (working) {
+            if (machinePulse.getStatus() != Animation.Status.RUNNING) {
+                machinePulse.playFromStart();
+            }
+        } else if (machinePulse.getStatus() == Animation.Status.RUNNING) {
+            machinePulse.stop();
+            machineImage.setScaleX(1.0);
+            machineImage.setScaleY(1.0);
+        }
     }
 
     private void onEngineUpdate() {
@@ -121,6 +148,7 @@ public class GameStageController {
     private void refreshScreen() {
         renderGrid();
         updateLabels();
+        updateMachinePulse();
         checkLevelEnd();
     }
 
@@ -274,6 +302,7 @@ public class GameStageController {
     @FXML
     private void onMachineClicked(MouseEvent event) {
         gameEngine.startEggPowderMachine();
+        updateMachinePulse();
         messageLabel.setText("Egg powder machine started");
     }
 
@@ -336,6 +365,9 @@ public class GameStageController {
     private void stopEverything() {
         if (refreshLoop != null) {
             refreshLoop.stop();
+        }
+        if (machinePulse != null) {
+            machinePulse.stop();
         }
         gameEngine.setUpdateListener(null);
         gameEngine.stopGame();
