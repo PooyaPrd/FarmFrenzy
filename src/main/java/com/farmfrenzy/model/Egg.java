@@ -7,7 +7,7 @@ public class Egg extends Product {
     private static int counter = 1;
 
     public Egg(int x, int y) {
-        super("egg" + counter, "Egg", "/images/egg.png", x, y, 15, 1, 10);
+        super("egg" + counter, "Egg", "/images/egg.jpg", x, y, 15, 1, 10);
         counter++;
     }
 

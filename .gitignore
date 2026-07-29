@@ -1,4 +1,5 @@
 target/
+src/main/resources/images/
 *.class
 *.log
 .idea/

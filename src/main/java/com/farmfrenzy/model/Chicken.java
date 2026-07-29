@@ -18,7 +18,7 @@ public class Chicken extends DomesticAnimal {
     private Random random;
 
     public Chicken(int x, int y) {
-        super("chicken" + counter, "Chicken", 1.0, "/images/chicken.png", x, y, 100, ProductType.EGG);
+        super("chicken" + counter, "Chicken", 1.0, "/images/chicken.jpg", x, y, 100, ProductType.EGG);
         counter++;
         this.random = new Random();
     }

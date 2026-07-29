@@ -14,7 +14,7 @@ public class EggPowderMachine extends Machine {
     private List<EggPowder> outputs;
 
     public EggPowderMachine(String id, int x, int y) {
-        super(id, "Egg Powder Machine", 5, 1, "/images/egg_powder_machine.png");
+        super(id, "Egg Powder Machine", 5, 1, "/images/egg_powder_machine.jpg");
         this.x = x;
         this.y = y;
         this.inputs = new ArrayList<>();
